@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Movie Application</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 40px;
+        }
+
+        input {
+            padding: 10px;
+            margin: 5px;
+        }
+
+        button {
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .movie {
+            border: 1px solid gray;
+            padding: 15px;
+            margin-top: 15px;
+            width: 400px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🎬 Movie Application</h1>
+
+    <h2>Add Movie</h2>
+
+    <input id="title" placeholder="Movie Title">
+    <input id="actor" placeholder="Actor">
+    <input id="actress" placeholder="Actress">
+    <input id="year" placeholder="Year">
+    <input id="genre" placeholder="Genre">
+    <input id="rating" placeholder="Rating">
+
+    <br>
+
+    <button onclick="addMovie()">Add Movie</button>
+
+    <h2>Movie List</h2>
+
+    <div id="movies"></div>
+
+
+    <script>
+
+        // Add movie
+        async function addMovie() {
+
+            const movie = {
+
+                title: document.getElementById("title").value,
+
+                actor: document.getElementById("actor").value,
+
+                actress: document.getElementById("actress").value,
+
+                year: document.getElementById("year").value,
+
+                genre: document.getElementById("genre").value,
+
+                rating: document.getElementById("rating").value
+            };
+
+
+            await fetch("/movies", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(movie)
+            });
+
+
+            alert("Movie added successfully!");
+
+            displayMovies();
+        }
+
+
+        // Display movies
+        async function displayMovies() {
+
+            const response = await fetch("/movies");
+
+            const movies = await response.json();
+
+            let output = "";
+
+
+            movies.forEach(movie => {
+
+                output += `
+
+                <div class="movie">
+
+                    <h3>${movie.title}</h3>
+
+                    <p>Actor: ${movie.actor}</p>
+
+                    <p>Actress: ${movie.actress}</p>
+
+                    <p>Year: ${movie.year}</p>
+
+                    <p>Genre: ${movie.genre}</p>
+
+                    <p>Rating: ${movie.rating}</p>
+
+                    <button onclick="deleteMovie('${movie._id}')">
+                        Delete
+                    </button>
+
+                </div>
+
+                `;
+            });
+
+
+            document.getElementById("movies").innerHTML = output;
+        }
+
+
+        // Delete movie
+        async function deleteMovie(id) {
+
+            await fetch("/movies/" + id, {
+
+                method: "DELETE"
+
+            });
+
+            alert("Movie deleted!");
+
+            displayMovies();
+        }
+
+
+        // Load movies when page opens
+        displayMovies();
+
+    </script>
+
+</body>
+
+</html>
